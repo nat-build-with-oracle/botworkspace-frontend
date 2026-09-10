@@ -1,6 +1,6 @@
 # BotWorkspace Web — frontend contract
 
-Status: **implemented MVP, verified locally**  
+Status: **implemented MVP, deployed to Cloudflare Workers**
 Last reviewed: 2026-09-10
 
 This document is the contract for the web companion. It is deliberately narrower than the native Mac app contract: the web project demonstrates the UI model with local fixtures and does not become a credentialed client by accident.
@@ -14,7 +14,7 @@ The shipped first screen is intentionally bounded to one workspace viewport. `Ap
 - One responsive workspace route (`/`).
 - Three visible zones on desktop: spaces rail, conversation sheet, inspector.
 - Fixture-backed selection, search, local-only compose, status announcement, theme tone, and mobile navigation.
-- Static build compatibility for GitHub Pages or any static host.
+- Cloudflare Workers Static Assets hosting, with a portable Vite static build.
 - Semantic HTML, keyboard focus, reduced motion, and 390px composition.
 
 ### Out of scope
@@ -116,3 +116,29 @@ Evidence captured in this repo:
 - A provider-neutral adapter contract is deferred until a real backend is requested.
 - Routing beyond `/` is deferred until a second surface exists.
 - Persistent user settings are deferred; theme and compose state are intentionally session-local.
+
+## 10. Deployment contract
+
+- Target: a static-assets-only Cloudflare Worker named `botworkspace-frontend`.
+- `wrangler.jsonc` publishes only `./dist`, with public `workers.dev` routing and
+  `single-page-application` navigation fallback. It does not enable a backend.
+- `npm run deploy:check` builds and performs a Wrangler dry-run without uploading.
+- `npm run deploy` rebuilds before publishing; Wrangler is pinned to 4.130.0 in
+  the command so no new application dependency is needed.
+- Authentication and account selection come from local Wrangler OAuth or external
+  environment variables; neither is committed. `.wrangler/`, local environment
+  files, and the shared memory link are ignored.
+- Git pushes do not automatically deploy. Deployment must be explicitly invoked.
+- Release verification: lint, TypeScript/build, Wrangler dry-run, live HTTP asset
+  byte comparison, SPA navigation, and an Ego Browser interaction smoke check.
+
+### Live release — 2026-09-10
+
+- URL: <https://botworkspace-frontend.laris.workers.dev>
+- Uploaded exactly four static assets: HTML, favicon, hashed JavaScript, and CSS.
+- Lint, TypeScript/build, deployment dry-run, and asset boundary assertions passed.
+- All four live assets returned HTTP 200 and matched the local build byte-for-byte.
+- Ego Browser verified the rendered React app, space selection, local compose,
+  theme toggling, and direct navigation through SPA fallback on the live URL.
+- Unknown paths return `index.html` with HTTP 200, including missing asset paths.
+  This is the documented [assets-only SPA fallback](https://developers.cloudflare.com/workers/static-assets/routing/single-page-application/), not a missing-file 404 contract.

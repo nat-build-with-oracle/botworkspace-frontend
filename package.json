@@ -7,7 +7,9 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "deploy:check": "npm run build && npx --yes wrangler@4.130.0 deploy --dry-run",
+    "deploy": "npm run build && npx --yes wrangler@4.130.0 deploy"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.3",

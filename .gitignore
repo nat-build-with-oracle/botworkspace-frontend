@@ -22,3 +22,11 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Cloudflare local runtime state and credentials are never published.
+.wrangler/
+.dev.vars*
+.env*
+
+# Machine-local shared memory link.
+/ψ

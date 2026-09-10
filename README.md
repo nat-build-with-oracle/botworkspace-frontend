@@ -2,6 +2,8 @@
 
 > A small, fixture-driven React + Tailwind companion for the BotWorkspace native Mac app.
 
+**[Open the live app](https://botworkspace-frontend.laris.workers.dev)** · Hosted on Cloudflare Workers
+
 BotWorkspace Web is an **open-source UI atlas**, not a hosted AI service. It makes the workspace model legible in a browser with synthetic conversations, a three-pane shell, and a local-only composer. Nothing here requires credentials or sends data to a provider.
 
 Independent project. Not affiliated with Grok and not a copy of proprietary source code.
@@ -49,6 +51,30 @@ Useful checks:
 npm run lint
 npm run build
 ```
+
+## Deploy to Cloudflare Workers
+
+This is a static-assets-only Worker, not a Cloudflare Pages project. Only the
+Vite output in `dist/` is published; source, memory, and local credentials are not.
+There is no server entrypoint or backend binding.
+
+```bash
+npm ci
+npm run deploy:check # build and validate without uploading
+npm run deploy       # rebuild and publish with Wrangler 4.130.0
+```
+
+Deployment requires Wrangler authentication. Use `npx wrangler@4.130.0 login`
+for local OAuth, or supply a scoped `CLOUDFLARE_API_TOKEN` outside the repository.
+Set `CLOUDFLARE_ACCOUNT_ID` when more than one account is available. Do not commit
+these values. Git pushes alone do not deploy; run the explicit deploy command.
+
+[`wrangler.jsonc`](./wrangler.jsonc) enables the public `workers.dev` address and
+SPA navigation fallback to `index.html`, following
+[Cloudflare's Static Assets configuration](https://developers.cloudflare.com/workers/static-assets/).
+With this assets-only SPA configuration, unknown paths—including missing asset
+paths—return `index.html` with HTTP 200. Verify the actual hashed JS/CSS files
+rather than treating an arbitrary 200 response as proof of an asset.
 
 ## Contract and visual system
 
