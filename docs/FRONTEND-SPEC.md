@@ -5,7 +5,7 @@ Last reviewed: 2026-09-10
 
 This document is the contract for the web companion. It is deliberately narrower than the native Mac app contract: the web project demonstrates the UI model with local fixtures and does not become a credentialed client by accident.
 
-The shipped first screen is intentionally bounded to one workspace viewport. `App.tsx` owns state and composition; reusable `Topbar`, `MobileToolbar`, `SpacesPanel`, `ConversationPanel`, `InspectorPanel`, and `Icon` components own the visual zones, while `data/fixtures.ts` owns authored records.
+The shipped first screen is intentionally bounded to one workspace viewport. `App.tsx` owns state and composition; reusable zone components own layout; `PanelHeading`, `MessageItem`, `Composer`, and `Icon` keep common UI small, while `data/fixtures.ts` owns authored records.
 
 ## 1. Scope
 
@@ -32,15 +32,15 @@ BotWorkspace Web
     ├── Spaces rail
     │   ├── Search fixture content
     │   ├── Space list + active state
-    │   └── Local fixture status
+    │   └── Source link
     ├── Conversation sheet
-    │   ├── Space title + synthetic badge
+    │   ├── Space title + description
     │   ├── Message thread
     │   └── Local-only composer
     └── Inspector
-        ├── Selected space summary
-        ├── Fixture metadata
-        └── Open thread action
+        ├── Actual message and participant counts
+        ├── Participant list
+        └── About the workspace
 ```
 
 ## 3. Behavior contract
@@ -49,9 +49,9 @@ BotWorkspace Web
 | --- | --- |
 | Select a space | Active marker moves; title, description, and fixture messages update. |
 | Search | Spaces and message summaries filter without a network request; empty state gives a recovery. |
-| Compose + send | Enabled only for non-empty text; appends a local fixture message and announces success. |
+| Compose + send | Non-empty text appends a local message, clears the draft/search, scrolls it into view, and announces success. Enter adds; Shift+Enter inserts a newline; IME confirmation does not submit. |
 | Theme button | Toggles the soft-light variant and updates its accessible label. |
-| Mobile navigation | Rail/inspector controls reveal labelled panels without losing the conversation. |
+| Mobile navigation | Rail/inspector temporarily replace the conversation without losing state. Open focuses the close button; close/Escape returns to the trigger. Hidden panels are absent from the tab order. |
 | Keyboard navigation | Every action is reachable; focus is visible; icon-only controls have labels. |
 
 ## 4. Fixture model
@@ -61,8 +61,6 @@ type Space = {
   id: string
   name: string
   description: string
-  count: number
-  tone: 'cyan' | 'ember' | 'lilac'
 }
 
 type Message = {
@@ -76,7 +74,7 @@ type Message = {
 }
 ```
 
-Fixtures are illustrative and must remain labelled in the surface. Any future adapter must preserve the same view model and explicit privacy boundary.
+Fixtures are illustrative. One global “Demo · local only” disclosure identifies the surface; only newly added messages receive a Local marker. Counts derive from actual records, not authored totals. State is cleared on reload. Any future adapter must preserve the same view model and explicit privacy boundary.
 
 ## 5. Visual contract
 
@@ -89,7 +87,7 @@ See [`DESIGN.md`](../DESIGN.md). The first viewport must communicate three-pane 
 - Focus rings use the signal color and are never removed.
 - Contrast targets follow WCAG AA for body text and controls.
 - Status updates use `aria-live="polite"`.
-- Reduced motion disables the signal sweep.
+- No decorative entrance animations or smooth auto-scroll; state changes remain immediate under reduced motion.
 
 ## 7. Privacy and independence contract
 
@@ -99,17 +97,15 @@ Tracked source must not contain sensitive values or environment-specific endpoin
 
 - `npm run lint` passes.
 - `npm run build` passes.
+- `npm run test:ui` passes against a running dev/preview server with Ego Browser available.
 - Impeccable detector reports no mechanical UI findings requiring a code change.
 - Ego Browser snapshot exposes the workspace landmarks and controls.
 - Desktop and mobile captures show no clipping, overflow, or hidden first-viewport mechanism.
 - A source scan finds no private endpoint or environment-specific identifiers.
 
-Evidence captured in this repo:
-
-- [Desktop review](../.impeccable/review/desktop.png) at 1440×900.
-- [Mobile review](../.impeccable/review/mobile.png) at 390×844.
-- The Impeccable mechanical scan returned `[]`; the later visual pass bounded the thread and kept the composer inside the first viewport.
-- `npm run lint` and `npm run build` pass.
+Evidence for this refinement is recorded in [`QUIETER-PASS.md`](./QUIETER-PASS.md).
+Screenshots are rendered browser captures, not generated mockups. Mechanical scan
+results are defect evidence, not a claim that every accessibility criterion passes.
 
 ## 9. Open decisions
 
@@ -142,3 +138,11 @@ Evidence captured in this repo:
   theme toggling, and direct navigation through SPA fallback on the live URL.
 - Unknown paths return `index.html` with HTTP 200, including missing asset paths.
   This is the documented [assets-only SPA fallback](https://developers.cloudflare.com/workers/static-assets/routing/single-page-application/), not a missing-file 404 contract.
+
+### Quieter refinement — 2026-09-10
+
+The same public Worker now serves the quieter workspace. All 25 interaction
+assertions pass against the live URL; HTML, favicon, JavaScript and CSS match the
+local build byte-for-byte. No hosting or data boundary changed. See
+[`QUIETER-PASS.md`](./QUIETER-PASS.md) for the cleanup plan, exact capture sizes,
+contrast checks, functional evidence, and browser coverage limits.

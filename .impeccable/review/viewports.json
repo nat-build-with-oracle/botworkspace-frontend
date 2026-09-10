@@ -1,0 +1,58 @@
+[
+  {
+    "name": "desktop",
+    "cssWidth": 1440,
+    "cssHeight": 900,
+    "imageWidth": 2160,
+    "imageHeight": 1350
+  },
+  {
+    "name": "soft-light",
+    "cssWidth": 1440,
+    "cssHeight": 900,
+    "imageWidth": 2160,
+    "imageHeight": 1350
+  },
+  {
+    "name": "mobile",
+    "cssWidth": 390,
+    "cssHeight": 844,
+    "imageWidth": 585,
+    "imageHeight": 1266
+  },
+  {
+    "name": "mobile-spaces",
+    "cssWidth": 390,
+    "cssHeight": 844,
+    "imageWidth": 585,
+    "imageHeight": 1266
+  },
+  {
+    "name": "mobile-details",
+    "cssWidth": 390,
+    "cssHeight": 844,
+    "imageWidth": 585,
+    "imageHeight": 1266
+  },
+  {
+    "width": 1023,
+    "height": 767,
+    "scrollWidth": 1023,
+    "scrollHeight": 767,
+    "composerBottom": 767.3333740234375
+  },
+  {
+    "width": 321,
+    "height": 641,
+    "scrollWidth": 321,
+    "scrollHeight": 641,
+    "composerBottom": 641.3333435058594
+  },
+  {
+    "longMessage": {
+      "noPageOverflow": true,
+      "threadScrolls": true,
+      "latestVisible": true
+    }
+  }
+]

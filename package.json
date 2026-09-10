@@ -9,7 +9,8 @@
     "lint": "oxlint",
     "preview": "vite preview",
     "deploy:check": "npm run build && npx --yes wrangler@4.130.0 deploy --dry-run",
-    "deploy": "npm run build && npx --yes wrangler@4.130.0 deploy"
+    "deploy": "npm run build && npx --yes wrangler@4.130.0 deploy",
+    "test:ui": "bash scripts/browser-smoke.sh"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.3",

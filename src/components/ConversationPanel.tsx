@@ -1,65 +1,49 @@
-import type { FormEvent } from 'react'
-import { Icon } from './Icon'
+import { useEffect, useRef, type FormEvent } from 'react'
+import { Composer } from './Composer'
+import { MessageItem } from './MessageItem'
 import type { Message, Space } from '../types'
 
 type ConversationPanelProps = {
   activeSpace: Space
   draft: string
   onDraftChange: (draft: string) => void
-  onOpenInspector: () => void
   onSubmit: (event: FormEvent<HTMLFormElement>) => void
   visibleMessages: Message[]
+  query: string
+  onClearSearch: () => void
 }
 
-export function ConversationPanel({
-  activeSpace,
-  draft,
-  onDraftChange,
-  onOpenInspector,
-  onSubmit,
-  visibleMessages,
-}: ConversationPanelProps) {
+export function ConversationPanel({ activeSpace, draft, onDraftChange, onSubmit, visibleMessages, query, onClearSearch }: ConversationPanelProps) {
+  const threadRef = useRef<HTMLDivElement>(null)
+  const latest = visibleMessages.at(-1)
+  useEffect(() => {
+    const thread = threadRef.current
+    if (thread) thread.scrollTop = latest?.tag === 'local' ? thread.scrollHeight : 0
+  }, [activeSpace.id, latest?.id, latest?.tag])
+
   return (
     <section aria-label="Conversation" className="conversation-panel">
       <header className="conversation-header">
-        <div className="conversation-heading">
-          <div className="breadcrumb"><span>BotWorkspace</span><Icon name="chevron" size={12} /><span>Spaces</span></div>
-          <div className="title-row"><h1>{activeSpace.name}</h1><span className="fixture-badge">Fixture</span></div>
-          <p>{activeSpace.description}</p>
-        </div>
-        <button aria-label="Open space details" className="header-action" onClick={onOpenInspector} type="button"><Icon name="panel" size={17} /></button>
+        <h1>{activeSpace.name}</h1>
+        <p>{activeSpace.description}</p>
       </header>
-      <div className="thread-wrap">
-        <div className="thread-intro">
-          <span className={`intro-mark tone-${activeSpace.tone}`}><Icon name="spark" size={16} /></span>
-          <div><strong>Conversation seed</strong><span>Authored content · {activeSpace.count} authored notes</span></div>
-          <span className="thread-rule" />
+      {query.trim() && (
+        <div className="search-summary">
+          <span>Search: “{query}”</span>
+          <button onClick={onClearSearch} type="button">Clear search</button>
         </div>
+      )}
+      <div className="thread-wrap" ref={threadRef} tabIndex={0} aria-label="Message history">
         <div className="message-list">
-          {visibleMessages.length ? visibleMessages.map((message) => (
-            <article className={`message ${message.role}`} key={message.id}>
-              <div className={`avatar tone-${message.tone}`} aria-hidden="true">{message.role === 'assistant' ? <Icon name="spark" size={16} /> : message.author.slice(0, 1)}</div>
-              <div className="message-content">
-                <div className="message-meta"><strong>{message.author}</strong>{message.tag && <span className={`message-tag ${message.tag}`}>{message.tag}</span>}<time>{message.timestamp}</time></div>
-                <p>{message.body}</p>
-              </div>
-            </article>
-          )) : (
-            <div className="empty-thread"><Icon name="search" size={18} /><strong>No messages match this search.</strong><span>Try a different word or clear the search in the spaces rail.</span></div>
+          {visibleMessages.length ? visibleMessages.map((message) => <MessageItem key={message.id} message={message} />) : (
+            <div className="empty-thread">
+              <strong>No messages match this search.</strong>
+              <button onClick={onClearSearch} type="button">Clear search</button>
+            </div>
           )}
         </div>
       </div>
-      <footer className="composer-wrap">
-        <form className="composer" onSubmit={onSubmit}>
-          <textarea aria-label={`Write a local fixture message in ${activeSpace.name}`} onChange={(event) => onDraftChange(event.target.value)} placeholder="Add a thought to this fixture…" rows={1} value={draft} />
-          <div className="composer-controls">
-            <span className="composer-hint"><Icon name="command" size={14} />Local fixture</span>
-            <span className="composer-hint desktop-only">Enter to add · Shift + Enter for a new line</span>
-            <button aria-label="Add local fixture message" className="send-button" disabled={!draft.trim()} type="submit"><Icon name="arrow-up" size={17} /></button>
-          </div>
-        </form>
-        <p className="composer-disclaimer">This demo never sends messages to a provider or a remote server.</p>
-      </footer>
+      <Composer spaceName={activeSpace.name} draft={draft} onDraftChange={onDraftChange} onSubmit={onSubmit} />
     </section>
   )
 }

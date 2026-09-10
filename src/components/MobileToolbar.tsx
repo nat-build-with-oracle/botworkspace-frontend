@@ -11,6 +11,8 @@ export function MobileToolbar({ activeSpace, mobilePanel, onPanelChange }: Mobil
   return (
     <div className="mobile-toolbar">
       <button
+        id="toggle-spaces"
+        aria-controls="spaces-panel"
         aria-expanded={mobilePanel === 'spaces'}
         className="mobile-nav-button"
         onClick={() => onPanelChange(mobilePanel === 'spaces' ? null : 'spaces')}
@@ -18,8 +20,10 @@ export function MobileToolbar({ activeSpace, mobilePanel, onPanelChange }: Mobil
       >
         <Icon name="grid" size={16} />Spaces
       </button>
-      <span className="mobile-current">{activeSpace.name}</span>
+      <span className="mobile-current">{mobilePanel ? activeSpace.name : ''}</span>
       <button
+        id="toggle-inspector"
+        aria-controls="inspector-panel"
         aria-expanded={mobilePanel === 'inspector'}
         className="mobile-nav-button"
         onClick={() => onPanelChange(mobilePanel === 'inspector' ? null : 'inspector')}

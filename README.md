@@ -16,18 +16,39 @@ The first viewport keeps the mechanism together: spaces on the left, a readable 
 
 ### Mobile composition
 
-![BotWorkspace Web mobile workspace](./.impeccable/review/mobile.png)
+<img src="./.impeccable/review/mobile.png" alt="BotWorkspace mobile conversation" width="320" />
 
 On narrow screens the conversation stays primary. Spaces and details become explicit labelled panels rather than a squeezed desktop layout.
+
+<details>
+<summary>More UI screenshots: soft-light, Spaces, and Details</summary>
+
+![Soft-light workspace](./.impeccable/review/soft-light.png)
+
+<img src="./.impeccable/review/mobile-spaces.png" alt="Mobile Spaces navigation and search" width="320" />
+<img src="./.impeccable/review/mobile-details.png" alt="Mobile conversation details and participants" width="320" />
+
+</details>
 
 ## Included interactions
 
 - Select a space and load its authored fixture conversation.
 - Search spaces and message summaries locally.
-- Add a local fixture message; the status region confirms that it was not sent anywhere.
+- Add a local message with Enter or the send button; Shift+Enter makes a new line. IME composition is respected.
+- See message/participant counts derived from the actual conversation.
 - Toggle the ink / soft-light relationship.
-- Open mobile Spaces and Details panels.
+- Open mobile Spaces and Details panels; Escape returns to the conversation.
 - Keyboard-visible focus, semantic landmarks, reduced-motion support, and touch-sized controls.
+
+## A quieter working surface
+
+Compact UI typography, neutral participant initials, and one muted teal action keep
+the focus on the conversation. No repeated demo badges, decorative sparkles,
+invented message totals, or pretend create/thread buttons. Local messages and
+settings last only until reload.
+
+The shared composer, message row, panel heading, and zone components keep the
+implementation small. Styles are split into foundation, rails, conversation, and responsive rules.
 
 ## Stack
 
@@ -50,6 +71,10 @@ Useful checks:
 ```bash
 npm run lint
 npm run build
+# With the dev server and Ego Browser running:
+npm run test:ui
+# Capture production-preview screenshots (start preview on port 5174 first):
+bash scripts/capture-ui.sh
 ```
 
 ## Deploy to Cloudflare Workers
@@ -80,6 +105,7 @@ rather than treating an arbitrary 200 response as proof of an asset.
 
 - [`PRODUCT.md`](./PRODUCT.md) — product truth, audience, boundaries, and accessibility.
 - [`DESIGN.md`](./DESIGN.md) — the Operate-mode visual system and interaction language.
+- [`docs/QUIETER-PASS.md`](./docs/QUIETER-PASS.md) — refinement plan and verification evidence.
 - [`docs/FRONTEND-SPEC.md`](./docs/FRONTEND-SPEC.md) — scope, view model, behavior, privacy, and verification gates.
 
 The UI is intentionally fixture-first. A future provider-neutral adapter must preserve the same view model and the explicit privacy boundary before any live integration is considered.

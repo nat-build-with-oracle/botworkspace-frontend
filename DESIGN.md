@@ -1,43 +1,70 @@
 # BotWorkspace Web — visual system
 
-## Surface mode
-
-**Operate.** The visitor is exploring a working app shell, so the design favors scanability, clear state, and a convincing conversation rhythm over a marketing hero.
-
 ## Direction
 
-An evening desk for an AI workspace: a deep ink canvas, warm paper-like message surfaces, and a single electric cyan signal that marks focus. The first viewport proves the mechanism immediately by showing all three working zones at once. The browser should feel like a composed instrument, not a dashboard of cards.
+A quiet split-view workspace, not an AI landing page. Keep the incumbent ink rails
+and warm paper conversation; use compact platform typography and a single muted
+teal for selection, focus, and actions. The conversation carries the hierarchy.
+
+This refinement preserves the sample conversations and three-zone structure.
+It removes repetitive demo badges, sparkle motifs, decorative tiles, editorial
+serif headings, and controls that did not perform an action.
 
 ## Palette
 
-- Ink: `#0b111d` — page ground and outer chrome.
-- Panel: `#101a2a` — navigation and inspector surfaces.
-- Paper: `#f2efe7` — conversation surface and readable body copy.
-- Paper muted: `#d3d0c8` — secondary message copy.
-- Signal: `#68e4db` — selected states, links, focus, and the send action.
-- Ember: `#ffb87a` — warm status dot and small human accent.
-- Rule: `rgba(255,255,255,.1)` — hairlines only; elevation comes from offset soft shadows.
+Tokens live in `src/styles/foundation.css`.
 
-## Type
+| Role | Ink theme | Soft-light theme |
+| --- | --- | --- |
+| Chrome | `#0e1719` | `#e3e8e4` |
+| Rail | `#142023` | `#edf0eb` |
+| Selected row | `#213538` | `#d8e4df` |
+| Rail text | `#f0eee8` | `#1d2b2c` |
+| Rail secondary | `#a9b4b3` | `#596568` |
+| Paper | `#f1eee5` | same |
+| Paper text / secondary | `#29302f` / `#626b68` | same |
+| Action on paper | `#39736e` | `#356b66` |
 
-Use a crisp platform sans for dense controls and a slightly editorial serif for the workspace title and message lead. Body measure stays comfortable; metadata is compact, uppercase, and tracked only when it improves wayfinding. Never use monospace as a costume: reserve it for fixture IDs and measurements.
+Teal is a functional accent, not a badge or glow. Avatars use neutral initials.
+Hairlines separate zones; no shadows or decorative entrance animations.
+
+## Typography and hierarchy
+
+- One platform UI sans stack, with Avenir as a fallback; no editorial serif.
+- Brand 14px/600; conversation title 20–23px/600; rail headings 17px/600.
+- Message body 14px with 1.62 line-height and a maximum 70ch measure.
+- Secondary text and metadata 11–13px, sentence case, not tracked uppercase.
+- Mobile inputs use 16px to avoid focus-triggered text zoom on mobile Safari.
+- “Demo · local only” appears once globally. Only newly added messages have a
+  Local marker. One composer line explains that reload clears local state.
 
 ## Composition
 
-- Desktop: a 220px rail, fluid conversation center, and 278px inspector inside a 100svh shell.
-- The conversation is the only light surface; its header, thread, and composer read as one sheet.
-- Navigation is a list with active signal, not a grid of cards.
-- Inspector uses grouped rows and an open thread action; it never competes with the message.
-- Mobile hides the rail and inspector behind labelled controls and keeps the conversation full width.
+- A 100dvh shell: 50px topbar, then one bounded workspace.
+- Desktop rails: 228px / fluid conversation / 244px; intermediate: 205px / fluid /
+  215px. Pane headings align to a 76px row.
+- Thread scrolls internally. The composer stays within the conversation pane.
+- At 820px and below, a 44px navigation strip exposes Spaces and Details. An open
+  secondary pane replaces the conversation; it is not a modal or overlay.
+- Closed mobile panes use `display: none`, removing their controls from tab order.
+- Mobile close, theme, navigation, and send controls have at least 44px targets.
 
-## Signature interaction
+## Interaction language
 
-Selecting a space shifts the active rail marker and conversation title. Sending a message adds a clearly marked local fixture to the thread and announces it in the status region. The one authored motion is a short signal sweep on selection/send; `prefers-reduced-motion` removes it.
+- Search offers explicit recovery in the rail and conversation.
+- Enter adds a local message; Shift+Enter inserts a newline. IME confirmation
+  must not submit. Adding clears search so the new message is visible.
+- Message and participant counts are computed from current records.
+- Mobile open moves focus into the pane; close or Escape restores the trigger.
+- Focus uses a contextual teal outline, including the scrollable thread and
+  input containers. Placeholder text, selection, caret, and scrollbars are themed.
+- Theme switching changes the rail tone without altering layout or persistence.
 
-## States
+## Implementation boundaries
 
-Hover and focus are explicit. Empty search results name the recovery. Sending with an empty composer is disabled. Theme toggle changes the paper/ink relationship without changing the information architecture. The app remains legible in the soft-light variant.
+`App.tsx` owns session state. Zone components compose shared `PanelHeading`,
+`MessageItem`, `Composer`, and `Icon` pieces. Four CSS files own foundation,
+rails, conversation, and responsive rules; `App.css` only imports them.
 
-## Anti-patterns intentionally avoided
-
-No generic hero, KPI tiles, gradient text, glassmorphism, emoji iconography, fake provider claims, or private infrastructure references. SVG icons are small, hand-authored outline paths with consistent stroke weight.
+No new dependencies, provider connections, persistence, private endpoints, or
+proprietary assets. See `docs/FRONTEND-SPEC.md` for behavior and deployment.

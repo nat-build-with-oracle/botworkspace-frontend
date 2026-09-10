@@ -1,9 +1,9 @@
 @import "tailwindcss";
 
 :root {
-  font-family: "Avenir Next", "Helvetica Neue", Arial, sans-serif;
-  color: #f5f4ef;
-  background: #080e18;
+  font-family: -apple-system, BlinkMacSystemFont, "Avenir Next", Avenir, "Segoe UI", sans-serif;
+  color: #f0eee8;
+  background: #0a1113;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -17,7 +17,8 @@
 body {
   margin: 0;
   min-width: 320px;
-  min-height: 100svh;
+  min-height: 100dvh;
+  overflow: hidden;
 }
 
 button,
@@ -35,11 +36,16 @@ button:focus-visible,
 a:focus-visible,
 input:focus-visible,
 textarea:focus-visible {
-  outline: 2px solid #68e4db;
+  outline: 3px solid var(--focus);
   outline-offset: 3px;
 }
 
 ::selection {
-  background: rgba(104, 228, 219, 0.35);
-  color: #f7f4ec;
+  color: #182120;
+  background: #a8cbc5;
+}
+
+* {
+  scrollbar-color: var(--signal-strong) transparent;
+  scrollbar-width: thin;
 }

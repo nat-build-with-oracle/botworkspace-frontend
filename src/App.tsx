@@ -1,4 +1,4 @@
-import { useMemo, useState, type FormEvent } from 'react'
+import { useEffect, useMemo, useState, type FormEvent } from 'react'
 import { ConversationPanel } from './components/ConversationPanel'
 import { InspectorPanel } from './components/InspectorPanel'
 import { MobileToolbar } from './components/MobileToolbar'
@@ -31,9 +31,25 @@ function App() {
     return messages.filter((message) => message.spaceId === activeSpace.id && (!normalizedQuery || message.body.toLowerCase().includes(normalizedQuery)))
   }, [activeSpace.id, messages, query])
 
+  const activeMessages = messages.filter((message) => message.spaceId === activeSpace.id)
+  const messageCounts = Object.fromEntries(spaces.map((space) => [
+    space.id, messages.filter((message) => message.spaceId === space.id).length,
+  ]))
+
+  function closePanel() {
+    setMobilePanel(null)
+    if (mobilePanel) document.getElementById(`toggle-${mobilePanel}`)?.focus()
+  }
+
+  useEffect(() => {
+    if (mobilePanel && window.matchMedia('(max-width: 820px)').matches) {
+      document.querySelector<HTMLButtonElement>(`#${mobilePanel}-panel .mobile-close`)?.focus()
+    }
+  }, [mobilePanel])
+
   function selectSpace(spaceId: string) {
     setActiveSpaceId(spaceId)
-    setMobilePanel(null)
+    closePanel()
     const selected = spaces.find((space) => space.id === spaceId)
     setAnnouncement(`${selected?.name ?? 'Space'} selected. Fixture content loaded.`)
   }
@@ -43,31 +59,34 @@ function App() {
     const trimmedDraft = draft.trim()
     if (!trimmedDraft) return
     const localMessage: Message = {
-      id: `local-${Date.now()}`,
+      id: `local-${crypto.randomUUID()}`,
       spaceId: activeSpace.id,
       author: 'You',
       role: 'human',
       body: trimmedDraft,
       timestamp: 'now',
-      tone: 'ember',
       tag: 'local',
     }
     setMessages((current) => [...current, localMessage])
     setDraft('')
+    setQuery('')
     setAnnouncement('Local fixture added. This message was not sent anywhere.')
   }
 
   return (
-    <div className={`app-shell ${isSoftLight ? 'soft-light' : ''}`}>
+    <div className={`app-shell ${isSoftLight ? 'soft-light' : ''}`} onKeyDown={(event) => {
+      if (event.key === 'Escape' && mobilePanel) closePanel()
+    }}>
       <div aria-live="polite" className="sr-only">{announcement}</div>
       <Topbar isSoftLight={isSoftLight} onToggleTheme={() => setIsSoftLight((value) => !value)} />
       <MobileToolbar activeSpace={activeSpace} mobilePanel={mobilePanel} onPanelChange={setMobilePanel} />
-      <main className="workspace-grid">
+      <main className={`workspace-grid ${mobilePanel ? 'has-mobile-panel' : ''}`}>
         <SpacesPanel
           activeSpaceId={activeSpace.id}
           filteredSpaces={filteredSpaces}
+          messageCounts={messageCounts}
           mobilePanel={mobilePanel}
-          onClose={() => setMobilePanel(null)}
+          onClose={closePanel}
           onQueryChange={setQuery}
           onSelect={selectSpace}
           query={query}
@@ -76,16 +95,17 @@ function App() {
           activeSpace={activeSpace}
           draft={draft}
           onDraftChange={setDraft}
-          onOpenInspector={() => setMobilePanel('inspector')}
           onSubmit={submitMessage}
           visibleMessages={visibleMessages}
+          query={query}
+          onClearSearch={() => setQuery('')}
         />
         <InspectorPanel
           activeSpace={activeSpace}
-          messageCount={messages.filter((message) => message.spaceId === activeSpace.id).length}
+          messageCount={activeMessages.length}
+          participants={[...new Set(activeMessages.map((message) => message.author))]}
           mobilePanel={mobilePanel}
-          onAnnounce={setAnnouncement}
-          onClose={() => setMobilePanel(null)}
+          onClose={closePanel}
         />
       </main>
     </div>

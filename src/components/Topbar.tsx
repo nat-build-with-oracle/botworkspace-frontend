@@ -6,24 +6,16 @@ type TopbarProps = {
 }
 
 export function Topbar({ isSoftLight, onToggleTheme }: TopbarProps) {
+  const themeLabel = isSoftLight ? 'Use ink theme' : 'Use soft light theme'
   return (
-    <header className="topbar flex items-center justify-between">
+    <header className="topbar">
       <div className="brand-lockup">
-        <div aria-hidden="true" className="brand-mark"><span /><span /><span /></div>
-        <div>
-          <p className="brand-name">BotWorkspace</p>
-          <p className="brand-mode">Web companion · fixture mode</p>
-        </div>
+        <span aria-hidden="true" className="brand-mark"><Icon name="panel" size={20} /></span>
+        <p className="brand-name">BotWorkspace</p>
       </div>
-      <div className="topbar-actions flex items-center">
-        <span className="status-chip"><span className="status-dot" />Local only</span>
-        <button
-          aria-label={isSoftLight ? 'Use ink theme' : 'Use soft light theme'}
-          className="icon-button theme-button"
-          onClick={onToggleTheme}
-          title={isSoftLight ? 'Use ink theme' : 'Use soft light theme'}
-          type="button"
-        >
+      <div className="topbar-actions">
+        <span className="demo-status">Demo · local only</span>
+        <button aria-label={themeLabel} className="icon-button theme-button" onClick={onToggleTheme} title={themeLabel} type="button">
           <Icon name={isSoftLight ? 'moon' : 'sun'} />
         </button>
       </div>
