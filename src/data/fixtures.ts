@@ -1,0 +1,88 @@
+import type { Message, Space } from '../types'
+
+export const spaces: Space[] = [
+  {
+    id: 'studio',
+    name: 'Studio notes',
+    description: 'Shape the next useful thing.',
+    count: 8,
+    tone: 'cyan',
+  },
+  {
+    id: 'signals',
+    name: 'Signal garden',
+    description: 'Patterns worth carrying forward.',
+    count: 5,
+    tone: 'ember',
+  },
+  {
+    id: 'field-kit',
+    name: 'Field kit',
+    description: 'Small tools, clearly named.',
+    count: 3,
+    tone: 'lilac',
+  },
+]
+
+export const seedMessages: Message[] = [
+  {
+    id: 'studio-1',
+    spaceId: 'studio',
+    author: 'Mira',
+    role: 'human',
+    body: 'The workspace should feel like a place you can return to, not a control panel you have to decode.',
+    timestamp: '09:14',
+    tone: 'ember',
+    tag: 'fixture',
+  },
+  {
+    id: 'studio-2',
+    spaceId: 'studio',
+    author: 'BotWorkspace',
+    role: 'assistant',
+    body: 'Then keep the conversation in the light, and let the surrounding chrome recede. One signal is enough to show where you are.',
+    timestamp: '09:15',
+    tone: 'cyan',
+    tag: 'fixture',
+  },
+  {
+    id: 'studio-3',
+    spaceId: 'studio',
+    author: 'Mira',
+    role: 'human',
+    body: 'Good. The right rail can hold context without competing with the thread.',
+    timestamp: '09:18',
+    tone: 'ember',
+    tag: 'fixture',
+  },
+  {
+    id: 'signals-1',
+    spaceId: 'signals',
+    author: 'Mira',
+    role: 'human',
+    body: 'A useful pattern should survive the move from one screen to the next.',
+    timestamp: '11:02',
+    tone: 'ember',
+    tag: 'fixture',
+  },
+  {
+    id: 'signals-2',
+    spaceId: 'signals',
+    author: 'BotWorkspace',
+    role: 'assistant',
+    body: 'Keep the data model small and the boundary visible. The rest can stay provisional.',
+    timestamp: '11:04',
+    tone: 'cyan',
+    tag: 'fixture',
+  },
+  {
+    id: 'field-kit-1',
+    spaceId: 'field-kit',
+    author: 'BotWorkspace',
+    role: 'assistant',
+    body: 'A compact toolkit is easier to trust when every action says what it changes.',
+    timestamp: '15:40',
+    tone: 'cyan',
+    tag: 'fixture',
+  },
+]
